@@ -1,6 +1,9 @@
 import { createStore } from 'vuex'
 import router from '../router'
 
+var apiKey = 'Enter your api key'
+var urlDB = 'Enter your DataBase Url'
+
 export default createStore({
   state: {
     tareas: [],
@@ -41,13 +44,15 @@ export default createStore({
   
   actions: {
     async cargarBDTareas({commit, state}){
+      var url = urlDB;
+
       if(localStorage.getItem('usuarioLocalStorage')){
         commit('setUser', JSON.parse(localStorage.getItem('usuarioLocalStorage')))
       }else{
         return commit('setUser',null)
       }
       try {
-        const res = await fetch (`https://practica-api-vue-default-rtdb.firebaseio.com/tareas/${state.user.localId}.json?auth=${state.user.idToken}`)
+        const res = await fetch (`${url}/tareas/${state.user.localId}.json?auth=${state.user.idToken}`)
         const dataDB = await res.json()
         const arrayTareas = []
 
@@ -63,8 +68,9 @@ export default createStore({
     },
 
     async setTareas({commit, state},tarea){
+      var url = urlDB;
         try {
-          const res =  await fetch(`https://practica-api-vue-default-rtdb.firebaseio.com/tareas/${state.user.localId}/${tarea.id}.json?auth=${state.user.idToken}`,{
+          const res =  await fetch(`${url}/tareas/${state.user.localId}/${tarea.id}.json?auth=${state.user.idToken}`,{
             method:'PUT',
             headers:{
               'Content-Type': 'application/json'
@@ -81,9 +87,9 @@ export default createStore({
     },
 
     async deleteTareas({commit, state},id){
-     
+      var url = urlDB;
       try {
-        await fetch(`https://practica-api-vue-default-rtdb.firebaseio.com/tareas/${state.user.localId}/${id}.json?auth=${state.user.idToken}`, {
+        await fetch(`${url}/tareas/${state.user.localId}/${id}.json?auth=${state.user.idToken}`, {
           method: 'DELETE'      
       })
       } catch (error) {
@@ -97,8 +103,9 @@ export default createStore({
     },
 
     async updateTarea({commit, state}, tarea){
+      var url = urlDB;
       try {
-        const res = await fetch(`https://practica-api-vue-default-rtdb.firebaseio.com/tareas/${state.user.localId}/${tarea.id}.json?auth=${state.user.idToken}`, {
+        const res = await fetch(`${url}/tareas/${state.user.localId}/${tarea.id}.json?auth=${state.user.idToken}`, {
         method:'PATCH',
         body: JSON.stringify(tarea)
       })
@@ -110,8 +117,10 @@ export default createStore({
     },
 
     async registrarUsuario({commit},usuario){
+      var api = apiKey;
       try {
-        const res = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDlC9XfrmJGuXll_9on2C4xiLBQJSq6BuI',{
+        console.log(api)
+        const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${api}`,{
           method:'POST',
           body: JSON.stringify({
             email: usuario.email,
@@ -135,8 +144,9 @@ export default createStore({
     },
    
      async ingresoUsuario({commit},usuario){
+        var api = apiKey;
         try {
-          const res = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDlC9XfrmJGuXll_9on2C4xiLBQJSq6BuI',{
+          const res = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${api}`,{
           method:'POST',
           body: JSON.stringify({
             email: usuario.email,
